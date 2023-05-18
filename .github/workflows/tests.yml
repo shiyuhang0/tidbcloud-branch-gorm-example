@@ -15,7 +15,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           public-key: ${{ secrets.TIDB_CLOUD_PUBLIC_KEY }}
           private-key: ${{ secrets.TIDB_CLOUD_PRIVATE_KEY }}
-          addMask: false
+          timeout-seconds: 600
+          add-mask: false
     outputs:
       username: ${{ steps.wait-for-branch.outputs.username }}
       port: ${{ steps.wait-for-branch.outputs.port }}
@@ -41,4 +42,4 @@ jobs:
           key: ubuntu-latest-go-1.19-${{ hashFiles('go.mod') }}
 
       - name: Tests
-        run: GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_TEST=branch GORM_HOST=${{ needs.setup.outputs.host }} GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidv" ./test.sh
+        run: GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_TEST=branch GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
