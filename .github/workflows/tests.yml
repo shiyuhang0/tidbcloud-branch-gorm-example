@@ -42,4 +42,6 @@ jobs:
           key: ubuntu-latest-go-1.19-${{ hashFiles('go.mod') }}
 
       - name: Tests
-        run: GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_TEST=branch GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
+        run: |
+          echo "::add-mask::${{ needs.setup.outputs.password }}"
+          GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_TEST=branch GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
