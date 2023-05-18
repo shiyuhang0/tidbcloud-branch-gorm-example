@@ -169,7 +169,7 @@ github:
 
 It is highly recommended running your CI with the TiDB Cloud branch rather than the production cluster before merging the pull request.
 
-Use [wait-for-tidbcloud-branch]() action to wait for the ready of the TiDB Cloud branch and get the connection information.
+Use [wait-for-tidbcloud-branch](https://github.com/tidbcloud/wait-for-tidbcloud-branch) action to wait for the ready of the TiDB Cloud branch and get the connection information.
 
 Here is an example:
 
@@ -180,8 +180,8 @@ steps:
     id: wait-for-branch
     with:
       token: ${{ secrets.GITHUB_TOKEN }}
-      publicKey: ${{ secrets.TIDB_CLOUD_API_PUBLIC_KEY }}
-      privateKey: ${{ secrets.TIDB_CLOUD_API_PRIVATE_KEY }}
+      public-key: ${{ secrets.TIDB_CLOUD_API_PUBLIC_KEY }}
+      private-key: ${{ secrets.TIDB_CLOUD_API_PRIVATE_KEY }}
 
   - name: Test with TiDB Cloud branch
      run: |
