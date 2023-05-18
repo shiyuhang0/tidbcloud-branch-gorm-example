@@ -1,0 +1,44 @@
+name: tests
+
+on:
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: tidbcloud/wait-for-tidbcloud-branch@v0
+        id: wait-for-branch
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          public-key: ${{ secrets.TIDB_CLOUD_PUBLIC_KEY }}
+          private-key: ${{ secrets.TIDB_CLOUD_PRIVATE_KEY }}
+          addMask: false
+    outputs:
+      username: ${{ steps.wait-for-branch.outputs.username }}
+      port: ${{ steps.wait-for-branch.outputs.port }}
+      host: ${{ steps.wait-for-branch.outputs.host }}
+      password: ${{ steps.wait-for-branch.outputs.password }}
+
+  test:
+    needs: setup
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Go 1.19
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.19
+
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
+
+      - name: go mod pakcage cache
+        uses: actions/cache@v2
+        with:
+          path: ~/go/pkg/mod
+          key: ubuntu-latest-go-1.19-${{ hashFiles('go.mod') }}
+
+      - name: Tests
+        run: GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_TEST=branch GORM_HOST=${{ needs.setup.outputs.host }} GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidv" ./test.sh
