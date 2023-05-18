@@ -190,5 +190,6 @@ steps:
         echo "The password is ${{ steps.wait-for-branch.outputs.password }}"
 ```
 
+## Example
 
 
