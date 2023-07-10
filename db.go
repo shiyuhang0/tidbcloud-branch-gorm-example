@@ -3,14 +3,13 @@ package main
 import (
 	"crypto/tls"
 	"errors"
+	"github.com/go-gormigrate/gormigrate/v2"
+	mysql2 "github.com/go-sql-driver/mysql"
 	"log"
-	"math/rand"
 	"os"
 	"path/filepath"
 	"regexp"
-	"time"
 
-	mysql2 "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -35,11 +34,9 @@ func init() {
 		if err != nil {
 			log.Printf("failed to connect database, got error %v\n", err)
 		}
-		// data branch need not run migrations
-		gormTest := os.Getenv("GORM_TEST")
-		if gormTest != "branch" {
-			RunMigrations()
-		}
+
+		RunMigrations()
+
 		if DB.Dialector.Name() == "sqlite" {
 			DB.Exec("PRAGMA foreign_keys = ON")
 		}
@@ -109,25 +106,22 @@ func OpenTestConnection() (db *gorm.DB, err error) {
 func RunMigrations() {
 	var err error
 	allModels := []interface{}{&User{}, &Account{}, &Pet{}, &Company{}, &Toy{}, &Language{}}
-	rand.Seed(time.Now().UnixNano())
-	rand.Shuffle(len(allModels), func(i, j int) { allModels[i], allModels[j] = allModels[j], allModels[i] })
+	m := gormigrate.New(DB, gormigrate.DefaultOptions, []*gormigrate.Migration{{
+		// create tables
+		ID: "202307101821",
+		Migrate: func(tx *gorm.DB) error {
+			if err = DB.AutoMigrate(allModels...); err != nil {
+				log.Printf("Failed to auto migrate, but got error %v\n", err)
+				return err
+			}
+			return nil
+		},
+	}})
 
-	DB.Migrator().DropTable("user_friends", "user_speaks")
-
-	if err = DB.Migrator().DropTable(allModels...); err != nil {
-		log.Printf("Failed to drop table, got error %v\n", err)
+	if err = m.Migrate(); err != nil {
+		log.Fatalf("Migration failed: %v", err)
 		os.Exit(1)
 	}
+	log.Println("Migration did run successfully")
 
-	if err = DB.AutoMigrate(allModels...); err != nil {
-		log.Printf("Failed to auto migrate, but got error %v\n", err)
-		os.Exit(1)
-	}
-
-	for _, m := range allModels {
-		if !DB.Migrator().HasTable(m) {
-			log.Printf("Failed to create table for %#v\n", m)
-			os.Exit(1)
-		}
-	}
 }

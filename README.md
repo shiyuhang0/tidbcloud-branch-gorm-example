@@ -10,7 +10,7 @@ Open a new PR or commit in this [example PR](https://github.com/shiyuhang0/tidbc
 
 This repo is based on [gorm playground](https://github.com/go-gorm/playground), with some changes:
 - A tidb dialect is added to the repo to test the TiDB Cloud.
-- An environment variable `GORM_TEST` is added. Migrations will not be run with the `branch` value of `GORM_TEST`.
+- The [gormigrate](https://github.com/go-gormigrate/gormigrate) is used in `RunMigrations` to help migration.
 - Delete some useless files like github actions, docker compose, etc.
 
 This repo has been connected to a TiDB Serverless using the [Branching GitHub integration](https://docs.pingcap.com/tidbcloud/branch-github-integration). This brings database branches to your GitHub workflows, a TiDB Cloud App will automatically manage database branches for you in the pull request.
