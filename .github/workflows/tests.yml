@@ -16,7 +16,6 @@ jobs:
           public-key: ${{ secrets.TIDB_CLOUD_PUBLIC_KEY }}
           private-key: ${{ secrets.TIDB_CLOUD_PRIVATE_KEY }}
           timeout-seconds: 600
-          add-mask: false
     outputs:
       username: ${{ steps.wait-for-branch.outputs.username }}
       port: ${{ steps.wait-for-branch.outputs.port }}
@@ -43,6 +42,6 @@ jobs:
 
       - name: Tests
         run: |
-          pswd=`${{ needs.setup.outputs.password }}`
+          pswd="${{ needs.setup.outputs.password }}"
           echo "::add-mask::$pswd"    
           GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_DSN="${{ needs.setup.outputs.username }}:$pswd@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
