@@ -5,7 +5,7 @@ on:
     branches: [ master ]
 
 jobs:
-  setup:
+  test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -16,24 +16,11 @@ jobs:
           public-key: ${{ secrets.TIDB_CLOUD_PUBLIC_KEY }}
           private-key: ${{ secrets.TIDB_CLOUD_PRIVATE_KEY }}
           timeout-seconds: 600
-          add-mask: false
-    outputs:
-      username: ${{ steps.wait-for-branch.outputs.username }}
-      port: ${{ steps.wait-for-branch.outputs.port }}
-      host: ${{ steps.wait-for-branch.outputs.host }}
-      password: ${{ steps.wait-for-branch.outputs.password }}
-
-  test:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
+      
       - name: Set up Go 1.19
         uses: actions/setup-go@v2
         with:
           go-version: 1.19
-
-      - name: Check out code into the Go module directory
-        uses: actions/checkout@v2
 
       - name: go mod pakcage cache
         uses: actions/cache@v2
@@ -43,5 +30,4 @@ jobs:
 
       - name: Tests
         run: |
-          echo "::add-mask::${{ needs.setup.outputs.password }}"
-          GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_DSN="${{ needs.setup.outputs.username }}:${{ needs.setup.outputs.password }}@tcp(${{ needs.setup.outputs.host }}:${{ needs.setup.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
+          GORM_ENABLE_CACHE=true GORM_DIALECT=tidb GORM_DSN="${{ steps.wait-for-branch.outputs.username }}:${{ steps.wait-for-branch.outputs.password }}@tcp(${{ steps.wait-for-branch.outputs.host }}:${{ steps.wait-for-branch.outputs.port }})/test?parseTime=true&tls=tidb" ./test.sh
