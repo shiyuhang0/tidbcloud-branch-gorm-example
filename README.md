@@ -4,7 +4,7 @@
 
 This repo is a gorm example of CI/CD workflow powered by the TiDB Serverless branch. With it, you can test with the branch (a fork of TiDB Serverless cluster) rather than the production cluster in every PR.
 
-Open a new PR or commit in this [example PR](https://github.com/shiyuhang0/tidbcloud-branch-gorm-example/pull/9) to have a try. Note that only 5 branches are allowed now, see [TiDB Serverless branches](https://docs.pingcap.com/tidbcloud/branch-overview) for more details.
+Open a new PR to have a try. Note that only 5 branches are allowed, see [TiDB Serverless branches](https://docs.pingcap.com/tidbcloud/branch-overview) for more details. So the better way is fork this repo and connect to your own TiDB Serverless following the [Branch GitHub Integration](https://docs.pingcap.com/tidbcloud/branch-github-integration).
 
 ## About this repo
 
